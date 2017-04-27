@@ -2,8 +2,6 @@
 
 class Pod extends Entity
 {
-    public $rotation;
-
     /**
      * @var Entity
      */
@@ -18,5 +16,10 @@ class Pod extends Entity
         parent::__construct($x, $y);
 
         $this->vector = new Coords(0, 0);
+    }
+
+    public function __toString()
+    {
+        return parent::__toString().' vector: '.$this->vector;
     }
 }

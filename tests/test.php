@@ -117,12 +117,19 @@ $checkpoints = [
     new Coords(100, 10),
     new Coords(40, 100),
     new Coords(0, 100),
+    new Coords(50, 150),
+    new Coords(100, 100),
 ];
 $pod = new Pod(10, 10);
 $pod->vector = new Coords(30, -20);
 
 $time = microtime(true);
 
+Trajectory::$GAP_INTERVAL = 5;
 $trajectory = new Trajectory($pod, $checkpoints);
+
+foreach ($trajectory->coords as $c) {
+    echo "$c\n";
+}
 
 d(microtime(true) - $time);

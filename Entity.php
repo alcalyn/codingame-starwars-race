@@ -76,6 +76,17 @@ class Entity
     }
 
     /**
+     * @param float $n
+     * @param Entity $center
+     *
+     * @return Coords
+     */
+    public function homothety($n, Entity $center)
+    {
+        return $this->sub($center)->mul($n)->add($center);
+    }
+
+    /**
      * @return bool
      */
     public function isOrigin()
@@ -126,7 +137,17 @@ class Entity
         $vector0 = $entity0->sub($this);
         $vector1 = $entity1->sub($this);
 
-        return atan2($vector1->y, $vector1->x) - atan2($vector0->y, $vector0->x);
+        $angle = atan2($vector1->y, $vector1->x) - atan2($vector0->y, $vector0->x);
+
+        if ($angle > M_PI) {
+            return $angle - 2 * M_PI;
+        }
+
+        if ($angle < -M_PI) {
+            return $angle + 2 * M_PI;
+        }
+
+        return $angle;
     }
 
     /**
