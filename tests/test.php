@@ -77,8 +77,8 @@ $pod->vector = new Coords(10, 0);
 
 $newTarget = AI::calculateCounterSteering($pod, $checkpoint);
 
-assertEquals(0, intval($newTarget->x));
-assertEquals(14, intval($newTarget->y));
+assertEquals(5, intval($newTarget->x));
+assertEquals(13, intval($newTarget->y));
 
 display('target on my right');
 $checkpoint = new Checkpoint(10, 10);
@@ -87,8 +87,8 @@ $pod->vector = new Coords(0, 10);
 
 $newTarget = AI::calculateCounterSteering($pod, $checkpoint);
 
-assertEquals(14, intval($newTarget->x));
-assertEquals(0, intval($newTarget->y));
+assertEquals(13, intval($newTarget->x));
+assertEquals(5, intval($newTarget->y));
 
 
 
