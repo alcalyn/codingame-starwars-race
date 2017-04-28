@@ -23,6 +23,11 @@ class Map
     public $nextCheckpoint;
 
     /**
+     * @var bool
+     */
+    public $looped;
+
+    /**
      * Constructor.
      */
     public function __construct()
@@ -30,6 +35,7 @@ class Map
         $this->checkpoints = [];
         $this->myPods = [];
         $this->opponentPods = [];
+        $this->looped = false;
     }
 
     /**
@@ -88,14 +94,13 @@ class Map
 
         foreach ($this->checkpoints as $key => $checkpoint) {
             if ($checkpoint->isAt($this->nextCheckpoint)) {
-                return $this->checkpoints[($key + $next) % count($this->checkpoints)];
+                return $this->checkpoints[($key + $next - 1) % count($this->checkpoints)];
             }
         }
 
         throw new RuntimeException('Could not determine next checkpoint.');
     }
 
-    private $looped = false;
     private function memorizeCheckpoints(Checkpoint $nextCheckpoint)
     {
         if (0 === count($this->checkpoints)) {
@@ -103,13 +108,13 @@ class Map
             return;
         }
 
-        if ($this->checkpoints[count($this->checkpoints) - 1] === $nextCheckpoint) {
+        if ($nextCheckpoint->isAt($this->checkpoints[count($this->checkpoints) - 1])) {
             return;
         }
 
         $this->checkpoints []= $nextCheckpoint;
 
-        if ($this->checkpoints[0] === $nextCheckpoint) {
+        if ($nextCheckpoint->isAt($this->checkpoints[0])) {
             $this->looped = true;
         }
     }

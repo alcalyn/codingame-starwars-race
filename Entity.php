@@ -38,6 +38,16 @@ class Entity
     /**
      * @param Entity $entity
      *
+     * @return bool
+     */
+    public function isNotAt(Entity $entity)
+    {
+        return !$this->isAt($entity);
+    }
+
+    /**
+     * @param Entity $entity
+     *
      * @return Coords
      */
     public function add(Entity $entity)

@@ -128,8 +128,35 @@ $time = microtime(true);
 Trajectory::$GAP_INTERVAL = 5;
 $trajectory = new Trajectory($pod, $checkpoints);
 
+$trajectory->updatePod(new Pod(50, 5));
+
+echo 'current point: '.$trajectory->getCurrentPoint().PHP_EOL;
+
+assertEquals(6, $trajectory->getCurrentPoint());
+
+d(microtime(true) - $time);
+
+
+
+display('TRAJECTORY WITH REAL PARAMETERS');
+
+$checkpoints = [
+    new Coords(7808, 837),
+    new Coords(7648, 5975),
+    new Coords(3169, 7520),
+    new Coords(9530, 4357),
+    new Coords(14548, 7756),
+    new Coords(6315, 4285),
+];
+$pod = new Pod(6315, 4285);
+
+$time = microtime(true);
+
+Trajectory::$GAP_INTERVAL = 200;
+$trajectory = new Trajectory($pod, $checkpoints);
+
 foreach ($trajectory->coords as $c) {
-    echo "$c\n";
+    echo "$c->x $c->y\n";
 }
 
 d(microtime(true) - $time);

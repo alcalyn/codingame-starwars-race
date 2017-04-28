@@ -15,12 +15,17 @@ class Trajectory
     public $pod;
 
     /**
+     * @var int
+     */
+    public $lastCoordsKey;
+
+    /**
      * @var Checkpoint[]
      */
     public $nextCheckpoints;
 
     /**
-     * @var Coords[]
+     * @var TrajectoryPoint[]
      */
     public $coords;
 
@@ -32,6 +37,7 @@ class Trajectory
     {
         $this->pod = $pod;
         $this->nextCheckpoints = $nextCheckpoints;
+        $this->lastCoordsKey = 0;
 
         $this->process();
     }
@@ -59,7 +65,7 @@ class Trajectory
         for ($i = 0; $i < count($checkpoints) - 1; $i++) {
             if (0 === $i) {
                 $controlPoints []= [
-                    $this->pod->add($this->pod->vector),
+                    $this->pod->add($this->pod->vector->mul(5)),
                     $checkpoints[$i    ]->rotate(-self::sign($angles[$i    ]) * (M_PI - abs($angles[$i    ])) / 2, $checkpoints[$i + 1])->homothety(1 / 3, $checkpoints[$i + 1]),
                 ];
             } elseif ((count($checkpoints) - 2) === $i) {
@@ -74,8 +80,6 @@ class Trajectory
             }
         }
 
-        $controlPoints[0][0] = $this->pod->add($this->pod->vector);
-
         for ($i = 0; $i < count($checkpoints) - 1; $i++) {
             $checkpoint0 = $checkpoints[$i];
             $checkpoint1 = $checkpoints[$i + 1];
@@ -83,7 +87,7 @@ class Trajectory
             $gapCount = intval(round($distance / self::$GAP_INTERVAL));
 
             if (0 === $gapCount) {
-                $this->coords []= $checkpoint1;
+                $this->coords []= TrajectoryPoint::from($checkpoint1);
                 continue;
             }
 
@@ -97,9 +101,38 @@ class Trajectory
             $points []= $checkpoint1;
 
             for ($j = 1; $j <= $gapCount; $j++) {
-                $this->coords []= self::bezier($points, $j * $gap);
+                $this->coords []= TrajectoryPoint::from(self::bezier($points, $j * $gap));
             }
         }
+
+        d($angles);
+        d($checkpoints);
+        d($controlPoints);
+    }
+
+    /**
+     * @param Pod $pod
+     */
+    public function updatePod(Pod $pod)
+    {
+        $this->pod = $pod;
+    }
+
+    /**
+     * @param Entity $entity
+     *
+     * @return int Key of nearest coords.
+     */
+    public function getCurrentPoint()
+    {
+        $nearestCoordsDistance = $this->pod->distanceTo($this->coords[$this->lastCoordsKey]);
+
+        while (($distance = $this->pod->distanceTo($this->coords[$this->lastCoordsKey + 1])) <= $nearestCoordsDistance) {
+            $this->lastCoordsKey++;
+            $nearestCoordsDistance = $distance;
+        }
+
+        return $this->lastCoordsKey;
     }
 
     /**
